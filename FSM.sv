@@ -69,3 +69,5 @@ always_comb begin
 				next_state = SET;
 		end
 end
+assign buzzer = (slot_mach_state == 2'b11) ? clk_buzzer : 1'b0;
+endmodule
