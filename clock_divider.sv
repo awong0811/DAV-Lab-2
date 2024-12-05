@@ -5,10 +5,10 @@ module clock_divider #(base_speed=26'd50000000) (
 	output logic outClk
 );
 
-logic [2:0] shift_reg;
-logic[25:0] counter;
-logic outClk_d;
-logic ratio;
+logic [2:0] shift_reg = 3'b0;
+logic[25:0] counter = 26'b0;
+logic outClk_d = 1'b0;
+logic [25:0] ratio = 26'b0;
 
 always_comb begin
 	ratio = base_speed/speed;
@@ -21,6 +21,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
+	shift_reg <= {shift_reg[1:0], reset};
 	if (counter == ratio-1) begin
 		counter <= 26'd0;
 		outClk <= 1'd0;
@@ -29,8 +30,7 @@ always_ff @(posedge clk) begin
 		outClk <= 1'd0;
 	end else begin
 		counter <= counter + 26'd1;
-		shift_reg <= {shift_reg[1:0], reset};
-		outClk <= outClk_d;
 	end
+	outClk <= outClk_d;
 end
 endmodule
