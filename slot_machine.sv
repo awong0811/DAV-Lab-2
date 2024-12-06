@@ -14,4 +14,5 @@ always_ff @(posedge clock) begin
     end else begin // reset is not 001 so is not resetting at this very moment
         shift_reg <= {shift_reg[1] ^ shift_reg[0], shift_reg[3:1]};
     end
+end
 endmodule

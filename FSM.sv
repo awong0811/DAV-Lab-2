@@ -30,9 +30,10 @@ typedef enum logic [1:0] {
 	RUN = 2'b01,
 	STOP = 2'b10,
 	WIN = 2'b11
-} state_t
+} state_t;
 
-state_t current_state=SET, next_state=SET;
+state_t current_state=SET;
+state_t next_state=SET;
 
 always_ff @(posedge clk) begin
 	shift_reg <= {shift_reg[1:0], reset};
@@ -68,6 +69,7 @@ always_comb begin
 			if (shift_reg==3'b001)
 				next_state = SET;
 		end
+	endcase
 end
 assign buzzer = (slot_mach_state == 2'b11) ? clk_buzzer : 1'b0;
 endmodule
