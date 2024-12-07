@@ -10,20 +10,24 @@ module FSM (
 
 logic [2:0] shift_reg = 3'b0;
 logic [2:0] shift_start_stop = 3'b0;
-logic [3:0] numbers [0:2] = [4'b0,4'b0,4'b0];
-buzzer = 0;
+logic [3:0] numbers [0:2];// = '{4'b0,4'b0,4'b0};
+logic running = 1'b0;
 
-logic clksignal1 = 0;
-logic clksignal2 = 0;
-logic clksignal3 = 0;
-clock_divider UUT1(clk, 20'd1000000, reset, clksignal1);
-clock_divider UUT2(clk, 20'd2000000, reset, clksignal2);
-clock_divider UUT3(clk, 20'd3000000, reset, clksignal3);
+logic clksignal1;// = 0;
+logic clksignal2;// = 0;
+logic clksignal3;// = 0;
+clock_divider UUT1(clk, 26'd1000000, reset, clksignal1);
+clock_divider UUT2(clk, 26'd2000000, reset, clksignal2);
+clock_divider UUT3(clk, 26'd3000000, reset, clksignal3);
+
+logic rst_slots;
+slot_machine UUT7(clk, running, rst_slots, numbers[0]);
+slot_machine UUT8(clk, running, rst_slots, numbers[1]);
+slot_machine UUT9(clk, running, rst_slots, numbers[2]);
 
 seven_segment_display UUT4(numbers[0], disp1);
 seven_segment_display UUT5(numbers[1], disp2);
 seven_segment_display UUT6(numbers[2], disp3);
-
 
 typedef enum logic [1:0] {
 	SET = 2'b00,
@@ -39,9 +43,16 @@ always_ff @(posedge clk) begin
 	shift_reg <= {shift_reg[1:0], reset};
 	shift_start_stop <= {shift_start_stop[1:0], start_stop};
 	current_state <= next_state;
+	if (current_state==RUN)
+		running <= 1'b1;
+	else
+		running <= 1'b0;
+	if (current_state==SET)
+		rst_slots <= 1'b1;
 end
 
 always_comb begin
+	next_state = current_state;
 	case (current_state)
 		SET: begin
 			if (shift_start_stop==3'b001 && shift_reg!=3'b001)
@@ -71,5 +82,5 @@ always_comb begin
 		end
 	endcase
 end
-assign buzzer = (slot_mach_state == 2'b11) ? clk_buzzer : 1'b0;
+assign buzzer = (current_state == 2'b11) ? 1'b1 : 1'b0;
 endmodule

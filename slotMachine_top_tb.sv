@@ -1,7 +1,9 @@
 `timescale 1ns/1ns
 
 module slotMachine_top_tb(
-		output [7:0] lights [0:5],
+		output [7:0] disp1 [0:1],
+		output [7:0] disp2 [0:1],
+		output [7:0] disp3 [0:1],
 		output buzzer
 );
 
@@ -9,11 +11,13 @@ logic clk;
 logic start_stop;
 logic reset;
 
-slotMachine_top UUT(
+FSM UUT(
 	.clk(clk),
 	.reset(reset),
 	.start_stop(start_stop),
-	.lights(lights),
+	.disp1(disp1),
+	.disp2(disp2),
+	.disp3(disp3),
 	.buzzer(buzzer)
 );
 
