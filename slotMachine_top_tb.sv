@@ -68,18 +68,12 @@ initial begin
 	#2000; //to go from set to run to stop to reset.
 	//takes 183,000 ns.
 	
-	
-	//so it's not changing right now, I'm guessing it's because the clk speeds for each clock module is rlly rlly slow...
-	//The state has changed, but the slot module output hasn't since it updates based on the divided clk speed. 
-	//first change appears at around 10 mil which is half of the period of a 50 Hz signal :)
-	//second number changes at 20 mil (25Hz is half of 50Hz so makes sense)
-	//my longest one doesn't work...could it be my fsm?
-	//either it's my clock divider or 100kHz kills my slot machine lol oh ok I'm a fool lol, it should change
-	//at 5000 and 15000. distance between each change is one period, NOT half a period.
-	//distance between every positive tick is ALWAYS one period. REMEMBER this for LIFE.
-	
-	//ok ill write code :(
 end
+
+//always begin
+	//#100 start_stop = ~start_stop;
+	//#1000 reset = ~reset;
+//end
 
 always begin
 	#10 clk = ~clk;

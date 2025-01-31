@@ -21,9 +21,9 @@ clock_divider UUT2(clk, 26'd2000000, reset, clksignal2);
 clock_divider UUT3(clk, 26'd3000000, reset, clksignal3);
 
 logic rst_slots;
-slot_machine UUT7(clk, running, rst_slots, numbers[0]);
-slot_machine UUT8(clk, running, rst_slots, numbers[1]);
-slot_machine UUT9(clk, running, rst_slots, numbers[2]);
+slot_machine UUT7(clksignal1, running, rst_slots, numbers[0]); // in case this is wrong first param used to be clk
+slot_machine UUT8(clksignal2, running, rst_slots, numbers[1]);
+slot_machine UUT9(clksignal3, running, rst_slots, numbers[2]);
 
 seven_segment_display UUT4(numbers[0], disp1);
 seven_segment_display UUT5(numbers[1], disp2);
@@ -45,6 +45,7 @@ always_ff @(posedge clk) begin
 	current_state <= next_state;
 	if (current_state==RUN)
 		running <= 1'b1;
+		rst_slots <= 1'b0; // added
 	else
 		running <= 1'b0;
 	if (current_state==SET)
