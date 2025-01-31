@@ -11,16 +11,20 @@ module FSM (
 logic [2:0] shift_reg = 3'b0;
 logic [2:0] shift_start_stop = 3'b0;
 logic [3:0] numbers [0:2];// = '{4'b0,4'b0,4'b0};
-logic running = 1'b0;
+logic running;
+assign running = current_state==RUN;
 
 logic clksignal1;// = 0;
 logic clksignal2;// = 0;
 logic clksignal3;// = 0;
-clock_divider UUT1(clk, 26'd1000000, reset, clksignal1);
-clock_divider UUT2(clk, 26'd2000000, reset, clksignal2);
-clock_divider UUT3(clk, 26'd3000000, reset, clksignal3);
+logic clksignal4;
+clock_divider UUT1(clk, 26'd1, ~reset, clksignal1);
+clock_divider UUT2(clk, 26'd5, ~reset, clksignal2);
+clock_divider UUT3(clk, 26'd9, ~reset, clksignal3);
+clock_divider UUT10(clk, 26'd10000, ~reset, clksignal4);
 
 logic rst_slots;
+assign rst_slots = (current_state == SET);
 slot_machine UUT7(clksignal1, running, rst_slots, numbers[0]); // in case this is wrong first param used to be clk
 slot_machine UUT8(clksignal2, running, rst_slots, numbers[1]);
 slot_machine UUT9(clksignal3, running, rst_slots, numbers[2]);
@@ -40,16 +44,17 @@ state_t current_state=SET;
 state_t next_state=SET;
 
 always_ff @(posedge clk) begin
-	shift_reg <= {shift_reg[1:0], reset};
-	shift_start_stop <= {shift_start_stop[1:0], start_stop};
+	shift_reg <= {shift_reg[1:0], ~reset};
+	shift_start_stop <= {shift_start_stop[1:0], ~start_stop};
 	current_state <= next_state;
-	if (current_state==RUN)
-		running <= 1'b1;
-		rst_slots <= 1'b0; // added
-	else
-		running <= 1'b0;
-	if (current_state==SET)
-		rst_slots <= 1'b1;
+//	if (current_state==RUN) begin
+//		running <= 1'b1;
+//		rst_slots <= 1'b0; // added
+//	end
+//	else
+//		running <= 1'b0;
+//	if (current_state==SET)
+//		rst_slots <= 1'b1;
 end
 
 always_comb begin
@@ -83,5 +88,5 @@ always_comb begin
 		end
 	endcase
 end
-assign buzzer = (current_state == 2'b11) ? 1'b1 : 1'b0;
+assign buzzer = (current_state == 2'b11) ? clksignal4 : 1'b0;
 endmodule
